@@ -8,3 +8,4 @@ build
 target
 .gradle
 out/
+*.class
