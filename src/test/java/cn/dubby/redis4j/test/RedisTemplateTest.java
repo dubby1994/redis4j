@@ -6,7 +6,6 @@ import cn.dubby.redis4j.RedisTemplate;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @author dubby
@@ -15,29 +14,24 @@ import java.util.concurrent.ThreadLocalRandom;
 public class RedisTemplateTest {
 
     public static void main(String[] args) throws ExecutionException, InterruptedException {
-        RedisClient redisClient = new RedisClient("127.0.0.1", 6379, "123456");
+        RedisClient redisClient = new RedisClient("127.0.0.1", 6379, "");
         RedisTemplate redisTemplate = new RedisTemplate(redisClient);
 
-        Future<String> infoFuture = redisTemplate.info();
-        System.out.println(infoFuture.get());
-
-        final String key = "test-key";
+        final String key = "abc";
+        Future<Long> del = redisTemplate.del(key);
+        System.out.println(del.get());
 
         System.out.println("==== LOOP START ====");
-        int threadNum = 3;
+        int threadNum = 1000;
         CountDownLatch countDownLatch = new CountDownLatch(threadNum);
         for (int i = 0; i < threadNum; ++i) {
             new Thread(() -> {
-                for (int j = 0; j < 10; ++j) {
+                for (int j = 0; j < 100; ++j) {
                     try {
-                        Future<Boolean> booleanFuture = redisTemplate.set(key, String.valueOf(Thread.currentThread().getId()) + ":" + j);
-                        System.out.println(booleanFuture.get());
-
-                        Future<String> stringFuture = redisTemplate.get(key);
-                        System.out.println(stringFuture.get());
-
-                        Thread.sleep(ThreadLocalRandom.current().nextInt(100, 2000));
+                        Future<Long> longFuture = redisTemplate.incr(key);
+                        System.out.println(longFuture.get());
                     } catch (Exception e) {
+                        System.out.println("error " + e.getMessage());
                         return;
                     }
                 }

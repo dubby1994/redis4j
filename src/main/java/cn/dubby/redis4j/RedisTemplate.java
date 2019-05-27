@@ -3,6 +3,7 @@ package cn.dubby.redis4j;
 import cn.dubby.redis4j.op.ServerOperation;
 import cn.dubby.redis4j.op.StringOperation;
 import cn.dubby.redis4j.util.RedisMessageUtil;
+import io.netty.handler.codec.redis.IntegerRedisMessage;
 import io.netty.handler.codec.redis.RedisMessage;
 import io.netty.handler.codec.redis.SimpleStringRedisMessage;
 
@@ -47,6 +48,44 @@ public class RedisTemplate implements StringOperation, ServerOperation {
                     future.complete(Boolean.TRUE);
                 } else {
                     future.complete(Boolean.FALSE);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        return future;
+    }
+
+    @Override
+    public Future<Long> incr(String key) {
+        Future<RedisMessage> redisMessageFuture = redisClient.execute("INCR " + key);
+        CompletableFuture<Long> future = new CompletableFuture<>();
+        callbackPool.submit(() -> {
+            try {
+                RedisMessage redisMessage = redisMessageFuture.get();
+                if (redisMessage instanceof IntegerRedisMessage) {
+                    future.complete(((IntegerRedisMessage) redisMessage).value());
+                } else {
+                    future.complete(-1L);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        return future;
+    }
+
+    @Override
+    public Future<Long> del(String key) {
+        Future<RedisMessage> redisMessageFuture = redisClient.execute("DEL " + key);
+        CompletableFuture<Long> future = new CompletableFuture<>();
+        callbackPool.submit(() -> {
+            try {
+                RedisMessage redisMessage = redisMessageFuture.get();
+                if (redisMessage instanceof IntegerRedisMessage) {
+                    future.complete(((IntegerRedisMessage) redisMessage).value());
+                } else {
+                    future.complete(-1L);
                 }
             } catch (Exception e) {
                 e.printStackTrace();

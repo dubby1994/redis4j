@@ -12,4 +12,8 @@ public interface StringOperation {
 
     Future<Boolean> set(String key, String value);
 
+    Future<Long> incr(String key);
+
+    Future<Long> del(String key);
+
 }

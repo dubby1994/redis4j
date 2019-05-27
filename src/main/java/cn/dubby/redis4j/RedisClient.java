@@ -86,10 +86,12 @@ public class RedisClient {
         }
     }
 
-    public synchronized Future<RedisMessage> execute(String command) {
-        Future<RedisMessage> future = redisClientHandler.getFuture();
-        channel.writeAndFlush(command);
-        return future;
+    public Future<RedisMessage> execute(String command) {
+        synchronized (RedisClient.class) {
+            Future<RedisMessage> future = redisClientHandler.getFuture();
+            channel.writeAndFlush(command);
+            return future;
+        }
     }
 
 }
