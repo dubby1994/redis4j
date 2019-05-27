@@ -4,7 +4,6 @@ import cn.dubby.redis4j.RedisClient;
 import cn.dubby.redis4j.op.AllOperation;
 import cn.dubby.redis4j.op.ServerOperation;
 import cn.dubby.redis4j.op.StringOperation;
-import cn.dubby.redis4j.template.AbstractRedisTemplate;
 import io.netty.handler.codec.redis.RedisMessage;
 
 import java.util.concurrent.Future;
