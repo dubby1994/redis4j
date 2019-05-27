@@ -19,7 +19,7 @@ public class RedisTemplateTest {
 
         final String key = "abc";
         Future<Long> del = redisTemplate.del(key);
-        System.out.println(del.get());
+        System.out.println("del:" + del.get());
 
         System.out.println("==== LOOP START ====");
         int threadNum = 100;
