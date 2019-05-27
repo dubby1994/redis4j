@@ -29,7 +29,7 @@ public class RedisClientHandler extends ChannelDuplexHandler {
         @Override
         public Thread newThread(Runnable r) {
             Thread thread = new Thread(r);
-            thread.setName("FillThread");
+            thread.setName("Redis4J-FillThread");
             thread.setDaemon(true);
             return thread;
         }

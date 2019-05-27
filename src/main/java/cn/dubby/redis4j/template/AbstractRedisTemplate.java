@@ -32,7 +32,7 @@ public class AbstractRedisTemplate {
         @Override
         public Thread newThread(Runnable r) {
             Thread thread = new Thread(r);
-            thread.setName("Redis4JCallbackThread");
+            thread.setName("Redis4J-CallbackThread");
             thread.setDaemon(true);
             return thread;
         }
