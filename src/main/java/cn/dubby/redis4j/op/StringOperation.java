@@ -14,6 +14,4 @@ public interface StringOperation {
 
     Future<Long> incr(String key);
 
-    Future<Long> del(String key);
-
 }

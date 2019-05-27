@@ -1,4 +1,4 @@
-package cn.dubby.redis4j;
+package cn.dubby.redis4j.handler;
 
 import io.netty.buffer.ByteBufUtil;
 import io.netty.channel.ChannelDuplexHandler;
@@ -30,6 +30,7 @@ public class RedisClientHandler extends ChannelDuplexHandler {
         public Thread newThread(Runnable r) {
             Thread thread = new Thread(r);
             thread.setName("FillThread");
+            thread.setDaemon(true);
             return thread;
         }
     });
@@ -39,6 +40,7 @@ public class RedisClientHandler extends ChannelDuplexHandler {
     public RedisClientHandler() {
         futureFillThread.execute(() -> {
             while (true) {
+                logger.debug("redisMessageBlockingQueue's size {}, futureQueue's size {}", redisMessageBlockingQueue.size(), futureQueue.size());
                 RedisMessage redisMessage = null;
                 try {
                     redisMessage = (RedisMessage) redisMessageBlockingQueue.take();

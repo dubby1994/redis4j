@@ -1,5 +1,6 @@
 package cn.dubby.redis4j;
 
+import cn.dubby.redis4j.handler.RedisClientHandler;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
@@ -87,7 +88,7 @@ public class RedisClient {
     }
 
     public Future<RedisMessage> execute(String command) {
-        synchronized (RedisClient.class) {
+        synchronized (this) {
             Future<RedisMessage> future = redisClientHandler.getFuture();
             channel.writeAndFlush(command);
             return future;

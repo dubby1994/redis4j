@@ -1,7 +1,7 @@
 package cn.dubby.redis4j.test;
 
 import cn.dubby.redis4j.RedisClient;
-import cn.dubby.redis4j.RedisTemplate;
+import cn.dubby.redis4j.template.RedisTemplate;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
@@ -22,7 +22,7 @@ public class RedisTemplateTest {
         System.out.println(del.get());
 
         System.out.println("==== LOOP START ====");
-        int threadNum = 1000;
+        int threadNum = 100;
         CountDownLatch countDownLatch = new CountDownLatch(threadNum);
         for (int i = 0; i < threadNum; ++i) {
             new Thread(() -> {
