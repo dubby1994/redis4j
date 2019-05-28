@@ -22,16 +22,10 @@ public class RedisClientTest {
     public static void main(String[] args) throws InterruptedException, ExecutionException {
         RedisClient redisClient = new RedisClient("127.0.0.1", 6379, "");
 
-        for (int i = 0; i < 3; ++i) {
-            new Thread(() -> {
-                try {
-                    Future<RedisMessage> future = redisClient.execute("INFO");
-                    printAggregatedRedisResponse(future.get());
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }).start();
-        }
+        Future<RedisMessage> future = redisClient.execute("INFO");
+        printAggregatedRedisResponse(future.get());
+
+        redisClient.close();
     }
 
     private static void printAggregatedRedisResponse(RedisMessage msg) {
