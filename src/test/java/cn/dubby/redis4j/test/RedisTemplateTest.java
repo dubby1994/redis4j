@@ -41,7 +41,7 @@ public class RedisTemplateTest {
         countDownLatch.await();
         System.out.println("==== LOOP COMPLETE ====");
 
-        System.out.println(redisTemplate.info().get());;
+        System.out.println(redisTemplate.info().get());
 
         redisTemplate.close();
     }
