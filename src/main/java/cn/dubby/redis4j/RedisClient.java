@@ -43,6 +43,10 @@ public class RedisClient {
 
     private RedisClientHandler redisClientHandler = new RedisClientHandler();
 
+    public RedisClientHandler getRedisClientHandler() {
+        return redisClientHandler;
+    }
+
     public RedisClient(String host, int port, String password) throws InterruptedException, ExecutionException {
         this.host = host;
         this.port = port;
