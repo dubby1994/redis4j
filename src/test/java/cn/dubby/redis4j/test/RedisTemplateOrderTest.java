@@ -3,7 +3,6 @@ package cn.dubby.redis4j.test;
 import cn.dubby.redis4j.RedisClient;
 import cn.dubby.redis4j.template.RedisTemplate;
 
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
