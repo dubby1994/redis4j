@@ -82,8 +82,9 @@ public class RedisClient {
         channel = b.connect(host, port).sync().channel();
 
         if (!StringUtil.isNullOrEmpty(password)) {
-            channel.writeAndFlush("AUTH " + password);
-            Future<RedisMessage> future = redisClientHandler.getFuture();
+            SendCommand sendCommand = new SendCommand(new CompletableFuture<>(), "AUTH " + password);
+            channel.writeAndFlush(sendCommand);
+            Future<RedisMessage> future = sendCommand.getFuture();
             RedisMessage redisMessage = future.get();
             if (redisMessage instanceof ErrorRedisMessage) {
                 logger.error(((ErrorRedisMessage) redisMessage).content());
@@ -93,7 +94,7 @@ public class RedisClient {
         }
     }
 
-    public Future<RedisMessage> execute(String command) {
+    public CompletableFuture<RedisMessage> execute(String command) {
         SendCommand sendCommand = new SendCommand(new CompletableFuture<>(), command);
         channel.writeAndFlush(sendCommand);
         return sendCommand.getFuture();

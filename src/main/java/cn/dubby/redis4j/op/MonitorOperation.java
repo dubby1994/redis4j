@@ -1,5 +1,6 @@
 package cn.dubby.redis4j.op;
 
+import cn.dubby.redis4j.exception.RedisException;
 import cn.dubby.redis4j.stream.RedisStream;
 
 import java.util.concurrent.ExecutionException;
@@ -10,6 +11,6 @@ import java.util.concurrent.ExecutionException;
  */
 public interface MonitorOperation {
 
-    RedisStream<String> monitor() throws ExecutionException, InterruptedException;
+    RedisStream<String> monitor() throws ExecutionException, InterruptedException, RedisException;
 
 }

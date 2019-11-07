@@ -1,16 +1,14 @@
 package cn.dubby.redis4j.template;
 
 import cn.dubby.redis4j.RedisClient;
+import cn.dubby.redis4j.exception.RedisException;
 import cn.dubby.redis4j.util.RedisMessageUtil;
 import io.netty.handler.codec.redis.IntegerRedisMessage;
 import io.netty.handler.codec.redis.RedisMessage;
 import io.netty.handler.codec.redis.SimpleStringRedisMessage;
 
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.ThreadFactory;
 
 /**
  * @author dubby
@@ -24,63 +22,41 @@ public class AbstractRedisTemplate {
         this.redisClient = redisClient;
     }
 
-    public void close() throws InterruptedException {
+    public void close() {
         redisClient.close();
     }
 
-    private ExecutorService callbackPool = Executors.newFixedThreadPool(1, new ThreadFactory() {
-        @Override
-        public Thread newThread(Runnable r) {
-            Thread thread = new Thread(r);
-            thread.setName("Redis4J-CallbackThread");
-            thread.setDaemon(true);
-            return thread;
-        }
-    });
-
-    protected Future<String> getString(Future<RedisMessage> redisMessageFuture) {
+    protected Future<String> getString(CompletableFuture<RedisMessage> redisMessageFuture) {
         CompletableFuture<String> future = new CompletableFuture<>();
-        callbackPool.submit(() -> {
+        redisMessageFuture.thenAccept(redisMessage -> {
             try {
-                RedisMessage redisMessage = redisMessageFuture.get();
-                String value = RedisMessageUtil.parseString(redisMessage);
-                future.complete(value);
-            } catch (Exception e) {
+                future.complete(RedisMessageUtil.parseString(redisMessage));
+            } catch (RedisException e) {
                 future.completeExceptionally(e);
             }
         });
         return future;
     }
 
-    protected Future<Long> getLong(Future<RedisMessage> redisMessageFuture) {
+    protected Future<Long> getLong(CompletableFuture<RedisMessage> redisMessageFuture) {
         CompletableFuture<Long> future = new CompletableFuture<>();
-        callbackPool.submit(() -> {
-            try {
-                RedisMessage redisMessage = redisMessageFuture.get();
-                if (redisMessage instanceof IntegerRedisMessage) {
-                    future.complete(((IntegerRedisMessage) redisMessage).value());
-                } else {
-                    future.complete(-1L);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
+        redisMessageFuture.thenAccept(redisMessage -> {
+            if (redisMessage instanceof IntegerRedisMessage) {
+                future.complete(((IntegerRedisMessage) redisMessage).value());
+            } else {
+                future.complete(-1L);
             }
         });
         return future;
     }
 
-    protected Future<Boolean> getBoolean(Future<RedisMessage> redisMessageFuture) {
+    protected Future<Boolean> getBoolean(CompletableFuture<RedisMessage> redisMessageFuture) {
         CompletableFuture<Boolean> future = new CompletableFuture<>();
-        callbackPool.submit(() -> {
-            try {
-                RedisMessage redisMessage = redisMessageFuture.get();
-                if (redisMessage instanceof SimpleStringRedisMessage) {
-                    future.complete(Boolean.TRUE);
-                } else {
-                    future.complete(Boolean.FALSE);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
+        redisMessageFuture.thenAccept(redisMessage -> {
+            if (redisMessage instanceof SimpleStringRedisMessage) {
+                future.complete(Boolean.TRUE);
+            } else {
+                future.complete(Boolean.FALSE);
             }
         });
         return future;

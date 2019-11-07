@@ -7,6 +7,7 @@ import cn.dubby.redis4j.op.ServerOperation;
 import cn.dubby.redis4j.op.StringOperation;
 import io.netty.handler.codec.redis.RedisMessage;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
 /**
@@ -21,31 +22,31 @@ public class RedisTemplate extends AbstractRedisTemplate implements CommonOperat
 
     @Override
     public Future<String> get(String key) {
-        Future<RedisMessage> redisMessageFuture = redisClient.execute("GET " + key);
+        CompletableFuture<RedisMessage> redisMessageFuture = redisClient.execute("GET " + key);
         return getString(redisMessageFuture);
     }
 
     @Override
     public Future<Boolean> set(String key, String value) {
-        Future<RedisMessage> redisMessageFuture = redisClient.execute("SET " + key + " " + value);
+        CompletableFuture<RedisMessage> redisMessageFuture = redisClient.execute("SET " + key + " " + value);
         return getBoolean(redisMessageFuture);
     }
 
     @Override
     public Future<Long> incr(String key) {
-        Future<RedisMessage> redisMessageFuture = redisClient.execute("INCR " + key);
+        CompletableFuture<RedisMessage> redisMessageFuture = redisClient.execute("INCR " + key);
         return getLong(redisMessageFuture);
     }
 
     @Override
     public Future<Long> del(String key) {
-        Future<RedisMessage> redisMessageFuture = redisClient.execute("DEL " + key);
+        CompletableFuture<RedisMessage> redisMessageFuture = redisClient.execute("DEL " + key);
         return getLong(redisMessageFuture);
     }
 
     @Override
     public Future<String> info() {
-        Future<RedisMessage> redisMessageFuture = redisClient.execute("INFO");
+        CompletableFuture<RedisMessage> redisMessageFuture = redisClient.execute("INFO");
         return getString(redisMessageFuture);
     }
 
@@ -58,7 +59,7 @@ public class RedisTemplate extends AbstractRedisTemplate implements CommonOperat
             cmd.append(" ");
             cmd.append(s);
         }
-        Future<RedisMessage> redisMessageFuture = redisClient.execute(cmd.toString());
+        CompletableFuture<RedisMessage> redisMessageFuture = redisClient.execute(cmd.toString());
         return getLong(redisMessageFuture);
     }
 
@@ -69,7 +70,7 @@ public class RedisTemplate extends AbstractRedisTemplate implements CommonOperat
             cmd.append(" ");
             cmd.append(s);
         }
-        Future<RedisMessage> redisMessageFuture = redisClient.execute(cmd.toString());
+        CompletableFuture<RedisMessage> redisMessageFuture = redisClient.execute(cmd.toString());
         return getLong(redisMessageFuture);
     }
 
@@ -82,7 +83,7 @@ public class RedisTemplate extends AbstractRedisTemplate implements CommonOperat
             cmd.append(" ");
             cmd.append(s);
         }
-        Future<RedisMessage> redisMessageFuture = redisClient.execute(cmd.toString());
+        CompletableFuture<RedisMessage> redisMessageFuture = redisClient.execute(cmd.toString());
         return getString(redisMessageFuture);
     }
 }
