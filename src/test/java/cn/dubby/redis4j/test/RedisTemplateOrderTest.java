@@ -22,7 +22,7 @@ public class RedisTemplateOrderTest {
 
         long startTime = System.currentTimeMillis();
         System.out.println("==== LOOP START ====");
-        int loopNum = 100000;
+        int loopNum = 4;
 
         for (int i = 0; i < loopNum; ++i) {
             Future<Long> longFuture = redisTemplate.incr(key);

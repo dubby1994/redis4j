@@ -23,11 +23,11 @@ public class RedisTemplateTest {
 
         long startTime = System.currentTimeMillis();
         System.out.println("==== LOOP START ====");
-        int threadNum = 100;
+        int threadNum = 2;
         CountDownLatch countDownLatch = new CountDownLatch(threadNum);
         for (int i = 0; i < threadNum; ++i) {
             new Thread(() -> {
-                for (int j = 0; j < 1000; ++j) {
+                for (int j = 0; j < 2; ++j) {
                     try {
                         Future<Long> longFuture = redisTemplate.incr(key);
                         System.out.println(longFuture.get());
