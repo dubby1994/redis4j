@@ -1,5 +1,6 @@
 package cn.dubby.redis4j.handler;
 
+import cn.dubby.redis4j.wrapper.SendCommand;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -13,49 +14,14 @@ import io.netty.util.internal.logging.InternalLoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedTransferQueue;
-import java.util.concurrent.ThreadFactory;
 
 public class RedisClientHandler extends ChannelDuplexHandler {
 
     private static final InternalLogger logger = InternalLoggerFactory.getInstance(RedisClientHandler.class);
 
-    private LinkedTransferQueue<CompletableFuture<RedisMessage>> futureQueue = new LinkedTransferQueue<CompletableFuture<RedisMessage>>();
-
-    private ExecutorService futureFillThread = Executors.newFixedThreadPool(1, new ThreadFactory() {
-        @Override
-        public Thread newThread(Runnable r) {
-            Thread thread = new Thread(r);
-            thread.setName("Redis4J-FillThread");
-            thread.setDaemon(true);
-            return thread;
-        }
-    });
-
-    private LinkedTransferQueue<Object> redisMessageBlockingQueue = new LinkedTransferQueue<Object>();
-
-    public RedisClientHandler() {
-        futureFillThread.execute(() -> {
-            while (true) {
-                logger.debug("redisMessageBlockingQueue's size {}, futureQueue's size {}", redisMessageBlockingQueue.size(), futureQueue.size());
-                RedisMessage redisMessage = null;
-                try {
-                    redisMessage = (RedisMessage) redisMessageBlockingQueue.take();
-                } catch (InterruptedException e) {
-                    logger.error("take interrupted", e);
-                }
-                try {
-                    CompletableFuture<RedisMessage> future = futureQueue.take();
-                    future.complete(redisMessage);
-                } catch (Exception e) {
-                    logger.error("futureList remove", e);
-                }
-            }
-        });
-    }
+    private LinkedTransferQueue<CompletableFuture<RedisMessage>> futureQueue = new LinkedTransferQueue<>();
 
     public Future<RedisMessage> getFuture() {
         CompletableFuture<RedisMessage> future = new CompletableFuture<>();
@@ -65,7 +31,10 @@ public class RedisClientHandler extends ChannelDuplexHandler {
 
     @Override
     public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) {
-        String[] commands = ((String) msg).split("\\s+");
+        SendCommand sendCommand = (SendCommand) msg;
+        futureQueue.add(((SendCommand) msg).getFuture());
+
+        String[] commands = sendCommand.getCommand().split("\\s+");
         List<RedisMessage> children = new ArrayList<RedisMessage>(commands.length);
         for (String cmdString : commands) {
             children.add(new FullBulkStringRedisMessage(ByteBufUtil.writeUtf8(ctx.alloc(), cmdString)));
@@ -75,8 +44,9 @@ public class RedisClientHandler extends ChannelDuplexHandler {
     }
 
     @Override
-    public void channelRead(ChannelHandlerContext ctx, Object msg) {
-        redisMessageBlockingQueue.add(msg);
+    public void channelRead(ChannelHandlerContext ctx, Object msg) throws InterruptedException {
+        CompletableFuture<RedisMessage> future = futureQueue.take();
+        future.complete((RedisMessage) msg);
     }
 
     @Override

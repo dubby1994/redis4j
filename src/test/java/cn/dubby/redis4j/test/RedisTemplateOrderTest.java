@@ -11,7 +11,7 @@ import java.util.concurrent.Future;
  * @author dubby
  * @date 2019/4/30 14:03
  */
-public class RedisTemplateTest {
+public class RedisTemplateOrderTest {
 
     public static void main(String[] args) throws ExecutionException, InterruptedException {
         RedisClient redisClient = new RedisClient("127.0.0.1", 6379, "");
@@ -23,23 +23,12 @@ public class RedisTemplateTest {
 
         long startTime = System.currentTimeMillis();
         System.out.println("==== LOOP START ====");
-        int threadNum = 100;
-        CountDownLatch countDownLatch = new CountDownLatch(threadNum);
-        for (int i = 0; i < threadNum; ++i) {
-            new Thread(() -> {
-                for (int j = 0; j < 1000; ++j) {
-                    try {
-                        Future<Long> longFuture = redisTemplate.incr(key);
-                        System.out.println(longFuture.get());
-                    } catch (Exception e) {
-                        System.out.println("error " + e.getMessage());
-                        return;
-                    }
-                }
-                countDownLatch.countDown();
-            }).start();
+        int loopNum = 100000;
+
+        for (int i = 0; i < loopNum; ++i) {
+            Future<Long> longFuture = redisTemplate.incr(key);
+            System.out.println(longFuture.get());
         }
-        countDownLatch.await();
         System.out.println("==== LOOP COMPLETE ====");
         System.out.println("COST:" + (System.currentTimeMillis() - startTime));
 
