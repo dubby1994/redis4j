@@ -65,3 +65,11 @@ while (true) {
 ```
 redisTemplate.close();
 ```
+
+![](https://www.dubby.cn/upload/2019-11-07/3b68cf8a-8697-4824-afba-c81288aaec62.png)
+
+![](https://www.dubby.cn/upload/2019-11-07/8a97fcdc-1241-4b81-b555-252711454a7a.png)
+
+![](https://www.dubby.cn/upload/2019-11-07/5e6e3f42-bdb6-466b-8f21-dd051834c95e.png)
+
+![](https://www.dubby.cn/upload/2019-11-07/cbd2ff10-a97f-4479-85fc-08dca88a4b56.png)
