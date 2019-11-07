@@ -56,7 +56,7 @@ public class RedisClient {
         init();
     }
 
-    public void close() throws InterruptedException {
+    public void close() {
         channel.close();
         group.shutdownGracefully();
     }

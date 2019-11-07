@@ -1,7 +1,7 @@
 package cn.dubby.redis4j.template;
 
 import cn.dubby.redis4j.RedisClient;
-import cn.dubby.redis4j.op.AllOperation;
+import cn.dubby.redis4j.op.CommonOperation;
 import cn.dubby.redis4j.op.HyperLogLogOperation;
 import cn.dubby.redis4j.op.ServerOperation;
 import cn.dubby.redis4j.op.StringOperation;
@@ -13,7 +13,7 @@ import java.util.concurrent.Future;
  * @author dubby
  * @date 2019/4/30 11:32
  */
-public class RedisTemplate extends AbstractRedisTemplate implements AllOperation, StringOperation, ServerOperation, HyperLogLogOperation {
+public class RedisTemplate extends AbstractRedisTemplate implements CommonOperation, StringOperation, ServerOperation, HyperLogLogOperation {
 
     public RedisTemplate(RedisClient redisClient) {
         super(redisClient);
